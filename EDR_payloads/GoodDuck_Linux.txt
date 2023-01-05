@@ -1,0 +1,43 @@
+REM Join the Wazuh EDR via VPN
+REM Create the bash script in the tmp directory
+DELAY 2000
+STRING mkdir -p /tmp/JTC
+ENTER
+DELAY 500
+STRING cd /tmp/JTC
+ENTER
+DELAY 500
+
+REM Install tailscale, however this can be changed for whichever VPN manager's instructions
+STRING echo 'curl -fsSL https://tailscale.com/install.sh | sh' > JTC.sh
+ENTER
+DELAY 500
+
+REM #######################################################################################################
+REM Modify the VPN_CONNECT to contain the VPN authentication code from your VPN manager.
+STRING echo 'VPN_CONNECT' >> JTC.sh
+ENTER
+DELAY 500
+
+REM #######################################################################################################
+REM Modify the WAZUH_CONNECT to contain the VPN authentication code from your Wazuh manager. This will be under the "Deploy Agent" section.
+STRING echo 'WAZUH_CONNECT' >> JTC.sh
+ENTER
+DELAY 500
+
+REM Start the Wazuh agent, and perform cleanup.
+STRING echo 'sudo systemctl daemon-reload; sudo systemctl enable wazuh-agent; sudo systemctl start wazuh-agent' >> JTC.sh
+ENTER
+DELAY 500
+STRING echo 'rm -rf /tmp/JTC'
+ENTER
+DELAY 500
+STRING chmod +x JTC.sh
+ENTER
+DELAY 500
+STRING bash JTC.sh
+ENTER
+DELAY 3000
+STRING test
+ENTER
+DELAY 500

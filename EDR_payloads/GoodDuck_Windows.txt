@@ -1,0 +1,99 @@
+REM Join the Wazuh EDR via VPN
+REM Open a Admin Shell
+DELAY 2000
+ESCAPE
+CONTROL ESCAPE
+DELAY 400
+STRING cmd
+DELAY 400
+CTRL-SHIFT ENTER
+DELAY 1200
+LEFT
+DELAY 400
+ENTER
+DELAY 1000
+ESCAPE
+DELAY 400
+ALT TAB
+DELAY 400
+
+REM Make the powershell script
+STRING mkdir c:\tmp
+ENTER
+DELAY 500
+STRING cd c:\tmp
+ENTER
+DELAY 500
+STRING echo $vpn = Read-Host > foo.ps1
+ENTER
+DELAY 500
+
+REM #######################################################################################################
+REM Modify the VPN_CONNECT to contain the VPN authentication code from your VPN manager, and remove the REM
+REM string echo VPN_CONNECT >> foo.ps1
+REM Below is an example with tailscale:
+REM STRING echo ^& "C:\Program Files\Tailscale\tailscale.exe" up --authkey=$vpn >> foo.ps1
+
+ENTER
+DELAY 500
+STRING echo Clear-Variable vpn >> foo.ps1
+ENTER
+DELAY 500
+STRING echo Clear-History >> foo.ps1
+ENTER
+DELAY 500
+
+REM Install tailscale, however this can be changed for whichever VPN manager's instructions. Note that the /qn and /i flags are used for quietly installing the application.
+STRING powershell -c "& {(New-Object System.Net.WebClient).DownloadFile('https://pkgs.tailscale.com/stable/tailscale-setup-1.34.1-amd64.msi','tailscale.msi')}"
+ENTER
+DELAY 8000
+STRING msiexec.exe /i tailscale.msi /qn
+ENTER
+
+REM #######################################################################################################
+REM Keeping this here, as these can be used for GUI install of the application, in the event msiexec command fails.
+REM DELAY 1000
+REM ALT TAB
+REM ENTER
+REM DELAY 1000
+REM ENTER
+REM DELAY 1000
+REM ENTER
+REM #######################################################################################################
+
+DELAY 10000
+ENTER
+DELAY 5000
+
+REM run powershell script
+STRING powershell -ep bypass -File foo.ps1
+ENTER
+DELAY 600
+
+REM #######################################################################################################
+REM Replace the API_KEY with the API key you wish to use for your VPN. The VPN auth key will be typed here.
+STRING API_KEY
+ENTER
+
+REM Connect to the Wazuh manager with the Wazuh agent.
+DELAY 1500
+
+REM #######################################################################################################
+REM Modify the WAZUH_CONNECT to contain the VPN authentication code from your Wazuh manager. This will be under the "Deploy Agent" section. As a side note, add a ';Clear-History' to the end of the command for cleanup.
+STRING WAZUH_CONNECT
+ENTER
+DELAY 10000
+
+REM Cleanup
+STRING cd ..
+ENTER
+DELAY 600
+STRING del tmp
+ENTER
+DELAY 600
+STRING Y
+ENTER
+DELAY 600
+STRING exit
+ENTER
+DELAY 600
